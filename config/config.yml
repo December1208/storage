@@ -1,0 +1,5 @@
+server:
+  sub_paths:
+    - strategy_center
+    - tube
+    - 
