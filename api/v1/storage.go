@@ -1,10 +1,45 @@
 package v1
 
-import "github.com/gin-gonic/gin"
+import (
+	"context"
+	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc/metadata"
+	"mime/multipart"
+	"storage/api"
+	"storage/pkg"
+)
 
-//type StorageHTTPServer interface {
-//	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
-//}
+type StorageServiceHTTPServer interface {
+	UploadFile(context.Context, *multipart.FileHeader) (*HelloReply, error)
+}
+
+type StorageService struct {
+	server     StorageServiceHTTPServer
+	router     gin.IRouter
+	webContext *pkg.WebContext
+}
+
+func (s *StorageService) UploadFile(ctx *gin.Context) {
+	webContext := pkg.NewWebContext(ctx)
+	md := metadata.New(nil)
+	for k, v := range ctx.Request.Header {
+		md.Set(k, v...)
+	}
+	newCtx := metadata.NewIncomingContext(webContext, md)
+	file, err := webContext.FormFile("file")
+	if err != nil {
+		pkg.Logger.Error(err.Error())
+		s.webContext.AbortWithError(api.NOT_DEFINED, "请求参数错误")
+		return
+	}
+	out, err := s.server.(StorageServiceHTTPServer).UploadFile(newCtx, file)
+	if err != nil {
+		pkg.Logger.Error(err.Error())
+		s.webContext.AbortWithError(api.NOT_DEFINED, "服务错误")
+		return
+	}
+	s.webContext.Success(out)
+}
 
 func RegisterStorageHTTPServer(eng *gin.Engine) {
 
