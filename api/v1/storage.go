@@ -5,18 +5,38 @@ import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/metadata"
 	"mime/multipart"
-	"storage/api"
 	"storage/pkg"
 )
 
+type UploadFileData struct {
+	File       *multipart.FileHeader
+	PathPrefix string
+}
+
+type UploadFileReply struct {
+	Identity string
+	Url      string
+}
+
 type StorageServiceHTTPServer interface {
-	UploadFile(context.Context, *multipart.FileHeader) (*HelloReply, error)
+	UploadFile(context.Context, *UploadFileData) (*UploadFileReply, error)
 }
 
 type StorageService struct {
 	server     StorageServiceHTTPServer
 	router     gin.IRouter
 	webContext *pkg.WebContext
+}
+
+func BindUploadFileData(webContext *pkg.WebContext) (UploadFileData, error) {
+	var result UploadFileData
+	file, err := webContext.FormFile("file")
+	if err != nil {
+		return result, err
+	}
+	result.File = file
+	result.PathPrefix = webContext.Request.FormValue("path_prefix")
+	return result, nil
 }
 
 func (s *StorageService) UploadFile(ctx *gin.Context) {
@@ -29,13 +49,13 @@ func (s *StorageService) UploadFile(ctx *gin.Context) {
 	file, err := webContext.FormFile("file")
 	if err != nil {
 		pkg.Logger.Error(err.Error())
-		s.webContext.AbortWithError(api.NOT_DEFINED, "请求参数错误")
+		s.webContext.AbortWithError(err)
 		return
 	}
 	out, err := s.server.(StorageServiceHTTPServer).UploadFile(newCtx, file)
 	if err != nil {
 		pkg.Logger.Error(err.Error())
-		s.webContext.AbortWithError(api.NOT_DEFINED, "服务错误")
+		s.webContext.AbortWithError(err)
 		return
 	}
 	s.webContext.Success(out)

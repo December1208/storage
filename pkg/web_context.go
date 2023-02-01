@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"
@@ -27,11 +28,32 @@ func (ctx *WebContext) Success(obj interface{}) {
 	})
 }
 
-func (ctx *WebContext) AbortWithError(code, message string) {
-	ctx.JSON(ServerErrorHTTPCode, gin.H{
+func (ctx *WebContext) AbortWithError(err error) {
+	code := -1
+	status := ServerErrorHTTPCode
+	msg := "未知错误"
+
+	if err == nil {
+		ctx.JSON(status, gin.H{
+			"code":    code,
+			"result":  nil,
+			"message": msg,
+			"success": false,
+		})
+		return
+	}
+	var c ICode
+	if errors.As(err, &c) {
+		status = c.HTTPCode()
+		code = c.Code()
+		msg = c.Message()
+		return
+	}
+
+	ctx.JSON(status, gin.H{
 		"code":    code,
-		"message": message,
 		"result":  nil,
+		"message": msg,
 		"success": false,
 	})
 }

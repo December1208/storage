@@ -1,9 +1,5 @@
 package pkg
 
-
-import
-
-
 type Metadata struct {
 	RequestUUID string
 }
