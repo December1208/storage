@@ -8,7 +8,7 @@ import (
 	"storage/pkg"
 )
 
-type UploadFileData struct {
+type UploadFileRequest struct {
 	File       *multipart.FileHeader
 	PathPrefix string
 }
@@ -19,17 +19,11 @@ type UploadFileReply struct {
 }
 
 type StorageServiceHTTPServer interface {
-	UploadFile(context.Context, *UploadFileData) (*UploadFileReply, error)
+	UploadFile(context.Context, *UploadFileRequest) (*UploadFileReply, error)
 }
 
-type StorageService struct {
-	server     StorageServiceHTTPServer
-	router     gin.IRouter
-	webContext *pkg.WebContext
-}
-
-func BindUploadFileData(webContext *pkg.WebContext) (UploadFileData, error) {
-	var result UploadFileData
+func BindUploadFileData(webContext *pkg.WebContext) (UploadFileRequest, error) {
+	var result UploadFileRequest
 	file, err := webContext.FormFile("file")
 	if err != nil {
 		return result, err
@@ -39,26 +33,29 @@ func BindUploadFileData(webContext *pkg.WebContext) (UploadFileData, error) {
 	return result, nil
 }
 
-func (s *StorageService) UploadFile(ctx *gin.Context) {
-	webContext := pkg.NewWebContext(ctx)
-	md := metadata.New(nil)
-	for k, v := range ctx.Request.Header {
-		md.Set(k, v...)
+func UploadFileHandler(srv StorageServiceHTTPServer) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		webContext := pkg.NewWebContext(ctx)
+		md := metadata.New(nil)
+		for k, v := range ctx.Request.Header {
+			md.Set(k, v...)
+		}
+		newCtx := metadata.NewIncomingContext(webContext, md)
+		reqData, err := BindUploadFileData(webContext)
+		if err != nil {
+			pkg.Logger.Error(err.Error())
+			webContext.AbortWithError(err)
+			return
+		}
+		out, err := srv.UploadFile(newCtx, &reqData)
+		if err != nil {
+			pkg.Logger.Error(err.Error())
+			webContext.AbortWithError(err)
+			return
+		}
+		webContext.Success(out)
 	}
-	newCtx := metadata.NewIncomingContext(webContext, md)
-	file, err := webContext.FormFile("file")
-	if err != nil {
-		pkg.Logger.Error(err.Error())
-		s.webContext.AbortWithError(err)
-		return
-	}
-	out, err := s.server.(StorageServiceHTTPServer).UploadFile(newCtx, file)
-	if err != nil {
-		pkg.Logger.Error(err.Error())
-		s.webContext.AbortWithError(err)
-		return
-	}
-	s.webContext.Success(out)
+
 }
 
 func RegisterStorageHTTPServer(eng *gin.Engine) {

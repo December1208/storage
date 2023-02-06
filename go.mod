@@ -6,9 +6,9 @@ require (
 	github.com/gin-gonic/gin v1.8.2
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/google/uuid v1.3.0
+	github.com/google/wire v0.5.0
 	go.uber.org/zap v1.24.0
 	google.golang.org/grpc v1.52.0
-	google.golang.org/protobuf v1.28.1
 )
 
 require (
@@ -29,5 +29,6 @@ require (
 	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
