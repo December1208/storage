@@ -36,3 +36,4 @@ bin/
 *.swp
 storage
 config/config.yaml
+media/*

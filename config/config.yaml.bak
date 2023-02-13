@@ -1,6 +1,7 @@
 server:
   addr: 0.0.0.0:5001
   mode: release
+  media_root: media
 
 database:
   driver: postgres
@@ -12,6 +13,6 @@ redis:
   db: 1
 
 local_storage:
-  domain: "127.0.0.1:5001"
-  base_path: ""
-
+  domain: 127.0.0.1:5001
+  base_path: common
+  url_prefix: /public_file

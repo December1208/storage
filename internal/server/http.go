@@ -24,6 +24,8 @@ func NewHTTPServer(storageService *service.StorageService, serverConfig config.S
 			param.ErrorMessage,
 		)
 	}))
+
+	eng.StaticFS("/public_file", gin.Dir("media", false))
 	//middleware.RegMiddleware(eng)
 	v1.RegisterStorageHTTPServer(eng, storageService)
 	return eng

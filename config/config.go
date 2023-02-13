@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"path"
+	"path/filepath"
 	"runtime"
 )
 
 type Server struct {
-	Addr string
-	Mode string
+	Addr      string
+	Mode      string
+	MediaRoot string
 }
 
 type DataBase struct {
@@ -24,8 +26,9 @@ type Redis struct {
 }
 
 type LocalStorage struct {
-	Domain   string
-	BasePath string
+	Domain    string
+	BasePath  string
+	UrlPrefix string
 }
 
 type Config struct {
@@ -46,8 +49,9 @@ func init() {
 	}
 
 	server := Server{
-		Addr: viper.GetString("server.addr"),
-		Mode: viper.GetString("server.mode"),
+		Addr:      viper.GetString("server.addr"),
+		Mode:      viper.GetString("server.mode"),
+		MediaRoot: viper.GetString("server.media_root"),
 	}
 	Instance.Server = server
 
@@ -65,8 +69,9 @@ func init() {
 	Instance.Redis = redis
 
 	localStorage := LocalStorage{
-		Domain:   viper.GetString("local_storage.domain"),
-		BasePath: viper.GetString("local_storage.base_path"),
+		Domain:    viper.GetString("local_storage.domain"),
+		BasePath:  filepath.Join(server.MediaRoot, viper.GetString("local_storage.base_path")),
+		UrlPrefix: filepath.Join(viper.GetString("local_storage.url_prefix"), viper.GetString("local_storage.base_path")),
 	}
 	Instance.LocalStorage = localStorage
 }
