@@ -3,10 +3,12 @@ package server
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	v1 "storage/api/v1"
+	"storage/internal/service"
 	"time"
 )
 
-func NewHTTPServer() *gin.Engine {
+func NewHTTPServer(storageService *service.StorageService) *gin.Engine {
 	eng := gin.New()
 
 	eng.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
@@ -22,7 +24,6 @@ func NewHTTPServer() *gin.Engine {
 		)
 	}))
 	//middleware.RegMiddleware(eng)
-	//routers.RegRouters(eng)
-	//webutil.InitValidator()
+	v1.RegisterStorageHTTPServer(eng, storageService)
 	return eng
 }

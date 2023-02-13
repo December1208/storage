@@ -1,48 +1,5 @@
 package biz
 
-import (
-	"context"
-	"mime/multipart"
-)
+import "github.com/google/wire"
 
-type FileData struct {
-	Identity string
-	Url      string
-	Name     string
-	Size     int
-	Type     string
-	Domain   string
-}
-
-type StorageInterface interface {
-	Save(ctx context.Context, dir string, fileHeader multipart.FileHeader) (FileData, error)
-	DownLoadToFile(ctx context.Context, identity, filePath string) error
-	DownLoadObject(ctx context.Context, identity string) ([]byte, error)
-	GetUrl(ctx context.Context, identity string) string
-}
-
-type StorageUseCase struct {
-	repo StorageInterface
-}
-
-func NewStorageUseCase(repo StorageInterface) *StorageUseCase {
-	return &StorageUseCase{
-		repo: repo,
-	}
-}
-
-func (uc *StorageUseCase) Save(ctx context.Context, dir string, fileHeader multipart.FileHeader) (FileData, error) {
-	return uc.repo.Save(ctx, dir, fileHeader)
-}
-
-func (uc *StorageUseCase) DownLoadToFile(ctx context.Context, identity, filePath string) error {
-	return uc.repo.DownLoadToFile(ctx, identity, filePath)
-}
-
-func (uc *StorageUseCase) DownLoadObject(ctx context.Context, identity string) ([]byte, error) {
-	return uc.repo.DownLoadObject(ctx, identity)
-}
-
-func (uc *StorageUseCase) GetUrl(ctx context.Context, identity string) string {
-	return uc.repo.GetUrl(ctx, identity)
-}
+var ProviderSet = wire.NewSet(NewStorageUseCase)

@@ -58,17 +58,9 @@ func UploadFileHandler(srv StorageServiceHTTPServer) func(ctx *gin.Context) {
 
 }
 
-func RegisterStorageHTTPServer(eng *gin.Engine) {
+func RegisterStorageHTTPServer(eng *gin.Engine, srv StorageServiceHTTPServer) {
 
-	//healthController := new(demo.HealthController)
-	//eng.GET("/health", healthController.Health)
-	//
-	//v2api := eng.Group("/v2/api")
-	//{
-	//	sse_server.AddApiRouter(v2api)
-	//}
-	//v2InnerApi := eng.Group("/v2/inner_api")
-	//{
-	//	sse_server.AddInnerApiRouter(v2InnerApi)
-	//}
+	v2api := eng.Group("/v1/api")
+
+	v2api.POST("/files/normal_upload", UploadFileHandler(srv))
 }
