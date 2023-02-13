@@ -8,8 +8,8 @@ import (
 )
 
 type Server struct {
-	Host string
-	Port int
+	Addr string
+	Mode string
 }
 
 type DataBase struct {
@@ -46,8 +46,8 @@ func init() {
 	}
 
 	server := Server{
-		Host: viper.GetString("server.host"),
-		Port: viper.GetInt("server.port"),
+		Addr: viper.GetString("server.addr"),
+		Mode: viper.GetString("server.mode"),
 	}
 	Instance.Server = server
 

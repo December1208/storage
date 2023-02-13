@@ -17,11 +17,11 @@ import (
 
 // Injectors from wire.go:
 
-func initApp(localStorageConfig config.LocalStorage) *gin.Engine {
+func initApp(localStorageConfig config.LocalStorage, serverConfig config.Server) *gin.Engine {
 	dataData := data.NewData(localStorageConfig)
 	storageInterface := data.NewStorageRepo(dataData)
 	storageUseCase := biz.NewStorageUseCase(storageInterface)
 	storageService := service.NewStorageService(storageUseCase)
-	engine := server.NewHTTPServer(storageService)
+	engine := server.NewHTTPServer(storageService, serverConfig)
 	return engine
 }

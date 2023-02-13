@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 type LocalStorage struct {
@@ -20,7 +21,7 @@ func (ls *LocalStorage) Save(ctx context.Context, dir string, fileHeader multipa
 	if dir != "" {
 		path = filepath.Join(path, dir)
 	}
-	identity := filepath.Join(path, fmt.Sprintf("%s.%s", uuid.NewString(), filepath.Ext(fileHeader.Filename)))
+	identity := filepath.Join(path, time.Now().Format("2006-01-02"), fmt.Sprintf("%s.%s", uuid.NewString(), filepath.Ext(fileHeader.Filename)))
 
 	src, err := fileHeader.Open()
 	if err != nil {

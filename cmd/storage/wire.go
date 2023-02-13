@@ -14,6 +14,6 @@ import (
 	"storage/internal/service"
 )
 
-func initApp(localStorageConfig config.LocalStorage) *gin.Engine {
+func initApp(localStorageConfig config.LocalStorage, serverConfig config.Server) *gin.Engine {
 	panic(wire.Build(server.ProviderSet, service.ProviderSet, biz.ProviderSet, data.ProviderSet))
 }
