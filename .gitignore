@@ -35,5 +35,5 @@ bin/
 .idea/
 *.swp
 storage
-config/config.yaml
+config/config.yml
 media/*
