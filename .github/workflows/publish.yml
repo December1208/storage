@@ -29,6 +29,6 @@ jobs:
       - name: Build and publish container image to registry
         uses: docker/build-push-action@v2
         with:
-          publish: true
+          push: true
           file: ./Dockerfile
           tags: ${{ env.REGISTRY }}/${{ env.REPO }}:${{ github.ref_name }}
