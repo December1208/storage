@@ -4,7 +4,7 @@ WORKDIR /code
 COPY . /code
 RUN export GOPROXY=https://proxy.golang.com.cn,direct && \
     go mod vendor && \
-    go build -mod vendor
+    go build code/cmd/storage -mod vendor
 
 FROM alpine:3.11
 WORKDIR /code
