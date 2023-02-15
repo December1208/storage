@@ -1,0 +1,12 @@
+version: "2.3"
+services:
+  storage:
+    image: ghcr.io/december1208/storage:main
+    container_name: storage
+    restart: always
+    entrypoint: "./storage"
+    ports:
+      - "5001:5001"
+    volumes:
+      - /home/ubuntu/apps/storage/config.yml:/code/config/config.yml
+      - /home/ubuntu/apps/storage/media:/code/media

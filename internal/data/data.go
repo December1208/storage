@@ -14,7 +14,7 @@ type Data struct {
 func NewData(localStorageConfig config.LocalStorage) *Data {
 	return &Data{
 		localStorage: &LocalStorage{
-			Domain: localStorageConfig.Domain, BasePath: localStorageConfig.BasePath, UrlPrefix: localStorageConfig.UrlPrefix,
+			BasePath: localStorageConfig.BasePath,
 		},
 	}
 }

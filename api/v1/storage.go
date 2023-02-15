@@ -16,6 +16,10 @@ type UploadFileRequest struct {
 type UploadFileReply struct {
 	Identity string
 	Url      string
+	Domain   string
+	Size     uint64
+	Type     string
+	Name     string
 }
 
 type StorageServiceHTTPServer interface {

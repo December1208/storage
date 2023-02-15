@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"path"
-	"path/filepath"
 	"runtime"
 )
 
 type Server struct {
-	Addr      string
-	Mode      string
-	MediaRoot string
+	Addr           string
+	Mode           string
+	MediaRoot      string
+	MediaUrlPrefix string
 }
 
 type DataBase struct {
@@ -26,9 +26,7 @@ type Redis struct {
 }
 
 type LocalStorage struct {
-	Domain    string
-	BasePath  string
-	UrlPrefix string
+	BasePath string
 }
 
 type Config struct {
@@ -36,6 +34,22 @@ type Config struct {
 	DataBase     DataBase
 	Redis        Redis
 	LocalStorage LocalStorage
+}
+
+func getStringOrDefault(key string, defaultValue string) string {
+	v := viper.GetString(key)
+	if v == "" {
+		return defaultValue
+	}
+	return v
+}
+
+func getIntOrDefault(key string, defaultValue int) int {
+	v := viper.GetInt(key)
+	if v == 0 {
+		return defaultValue
+	}
+	return v
 }
 
 func init() {
@@ -49,29 +63,28 @@ func init() {
 	}
 
 	server := Server{
-		Addr:      viper.GetString("server.addr"),
-		Mode:      viper.GetString("server.mode"),
-		MediaRoot: viper.GetString("server.media_root"),
+		Addr:           getStringOrDefault("server.addr", "127.0.0.1:5000"),
+		Mode:           getStringOrDefault("server.mode", "debug"),
+		MediaRoot:      getStringOrDefault("server.media_root", "media"),
+		MediaUrlPrefix: getStringOrDefault("server.media_url_prefix", "/public_file"),
 	}
 	Instance.Server = server
 
 	database := DataBase{
-		Driver: viper.GetString("database.driver"),
-		Dsn:    viper.GetString("database.dsn"),
+		Driver: getStringOrDefault("database.driver", ""),
+		Dsn:    getStringOrDefault("database.dsn", ""),
 	}
 	Instance.DataBase = database
 
 	redis := Redis{
-		Addr:     viper.GetString("redis.addr"),
-		Password: viper.GetString("redis.password"),
-		Db:       viper.GetInt("redis.db"),
+		Addr:     getStringOrDefault("redis.addr", "127.0.0.1:6379"),
+		Password: getStringOrDefault("redis.password", ""),
+		Db:       getIntOrDefault("redis.db", 1),
 	}
 	Instance.Redis = redis
 
 	localStorage := LocalStorage{
-		Domain:    viper.GetString("local_storage.domain"),
-		BasePath:  filepath.Join(server.MediaRoot, viper.GetString("local_storage.base_path")),
-		UrlPrefix: filepath.Join(viper.GetString("local_storage.url_prefix"), viper.GetString("local_storage.base_path")),
+		BasePath: getStringOrDefault("local_storage.base_path", "common"),
 	}
 	Instance.LocalStorage = localStorage
 }

@@ -10,7 +10,7 @@ type ICode interface {
 
 type ErrorCode struct {
 	status int
-	code   int
+	code   string
 	msg    string
 }
 
@@ -18,7 +18,7 @@ func (code ErrorCode) Error() string {
 	return fmt.Sprintf("GetCode: %d, msg: %s", code.code, code.msg)
 }
 
-func (code ErrorCode) Code() int {
+func (code ErrorCode) Code() string {
 	return code.code
 }
 
@@ -30,7 +30,7 @@ func (code ErrorCode) HTTPCode() int {
 	return code.status
 }
 
-func Errorf(status, code int, msg string, v ...interface{}) error {
+func Errorf(status int, code string, msg string, v ...interface{}) error {
 	return &ErrorCode{
 		status: status,
 		code:   code,

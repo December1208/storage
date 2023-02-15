@@ -5,17 +5,8 @@ import (
 	"mime/multipart"
 )
 
-type FileData struct {
-	Identity string
-	Url      string
-	Name     string
-	Size     int
-	Type     string
-	Domain   string
-}
-
 type StorageInterface interface {
-	Save(ctx context.Context, dir string, fileHeader multipart.FileHeader) (FileData, error)
+	Save(ctx context.Context, dir string, fileHeader *multipart.FileHeader) (string, error)
 	DownLoadToFile(ctx context.Context, identity, filePath string) error
 	DownLoadObject(ctx context.Context, identity string) ([]byte, error)
 	GetUrl(ctx context.Context, identity string) string
@@ -31,7 +22,7 @@ func NewStorageUseCase(repo StorageInterface) *StorageUseCase {
 	}
 }
 
-func (uc *StorageUseCase) Save(ctx context.Context, dir string, fileHeader multipart.FileHeader) (FileData, error) {
+func (uc *StorageUseCase) Save(ctx context.Context, dir string, fileHeader *multipart.FileHeader) (string, error) {
 	return uc.repo.Save(ctx, dir, fileHeader)
 }
 

@@ -3,7 +3,6 @@ package data
 import (
 	"context"
 	"mime/multipart"
-	"net/url"
 	"storage/internal/biz"
 )
 
@@ -15,24 +14,13 @@ func NewStorageRepo(data *Data) biz.StorageInterface {
 	return &StorageRepo{data: data}
 }
 
-func (sr *StorageRepo) Save(ctx context.Context, dir string, fileHeader multipart.FileHeader) (biz.FileData, error) {
+func (sr *StorageRepo) Save(ctx context.Context, dir string, fileHeader *multipart.FileHeader) (string, error) {
 	identity, err := sr.data.localStorage.Save(ctx, dir, fileHeader)
 	if err != nil {
-		return biz.FileData{}, err
+		return "", err
 	}
 
-	fileUrl, _ := url.Parse(sr.data.localStorage.Domain)
-	fileUrl.Path = identity
-
-	fileData := biz.FileData{
-		Identity: identity,
-		Url:      fileUrl.String(),
-		Domain:   sr.data.localStorage.Domain,
-		Size:     0,
-		Type:     "",
-		Name:     fileHeader.Filename,
-	}
-	return fileData, nil
+	return identity, nil
 }
 
 func (sr *StorageRepo) DownLoadToFile(ctx context.Context, identity, filePath string) error {

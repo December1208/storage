@@ -25,7 +25,7 @@ func NewHTTPServer(storageService *service.StorageService, serverConfig config.S
 		)
 	}))
 
-	eng.StaticFS("/public_file", gin.Dir("media", false))
+	eng.StaticFS(serverConfig.MediaUrlPrefix, gin.Dir(serverConfig.MediaRoot, false))
 	//middleware.RegMiddleware(eng)
 	v1.RegisterStorageHTTPServer(eng, storageService)
 	return eng
